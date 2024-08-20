@@ -1,2 +1,16 @@
 *
 !.gitignore
+!model_weights
+!model_loss
+!model_errors
+!model_data
+!emullver.py
+!error.py
+!generate_data.py
+!model_energy_array.txt
+!models.py
+!plotting.py
+!SURF5.ipynb
+!training.py
+!XILLVER_emulator_DEMO.ipynb
+!xspec_comparison.py
