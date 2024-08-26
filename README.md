@@ -14,11 +14,11 @@ Features of X-Ray spectra correspond to certain characteristics of a black hole 
 
 <p align="center">
     <div style="display: inline-block; text-align: center; margin-right: 1%;">
-        <img src="https://github.com/Rahel-Joshi/X-Ray-Spectra-Emulator/blob/main/Matzeu.png" width="100%">
+        <img src="https://github.com/Rahel-Joshi/X-Ray-Spectra-Emulator/blob/main/Matzeu.png" width="30%">
         <p>This is the text for the first image</p>
     </div>
     <div style="display: inline-block; text-align: center; margin-left: 1%;">
-        <img src="https://github.com/Rahel-Joshi/X-Ray-Spectra-Emulator/blob/main/Matzeu2.png" width="100%">
+        <img src="https://github.com/Rahel-Joshi/X-Ray-Spectra-Emulator/blob/main/Matzeu2.png" width="30%">
         <p>This is the text for the second image</p>
     </div>
 </p>
