@@ -21,16 +21,20 @@ Xset.chatter = 0
 Xset.logChatter = 0
 
 def get_mean_square_error(emulated_spec, xillver_spec):
-    '''
-    compute mean square error for emulated spectra
-    '''
+    """
+    Compute mean square error for emulated spectra
+
+    :param emulated_spec: The emulated X-ray spectra
+    :param xillver_spec: The XILLVER model X-ray spectra
+    :return: The mean square error
+    """
     return np.mean(np.square(emulated_spec - xillver_spec))
 
 def create_errors():
-    '''
-    creates file of array of (gamma, Afe, logxi, Ecut, Incl, error)
+    """
+    Creates file of array of (gamma, Afe, logxi, Ecut, Incl, error)
     for Matzeu et al emulator
-    '''
+    """
     with open("data.pickle", "rb") as handle:
         data = pickle.load(handle)
 
@@ -64,15 +68,20 @@ def create_errors():
     np.save("Emulator_Train_Errors.npy", tuples)
 
 def get_errors_from_file(file):
-    '''
-    returns array of (gamma, Afe, logxi, Ecut, Incl, error)
-    '''
+    """
+    Returns array of (gamma, Afe, logxi, Ecut, Incl, error)
+
+    :param str file: Path to the file of errors
+    :return: The lists of the tuples
+    """
     return np.load(file)
 
 def graph_errors(tuples, vert=True):
-    '''
-    graph scatterplots of the error
-    '''
+    """
+    Graph scatterplots of the error in the 5d parameter space
+
+    :param tuples: The tuples of (gamma, Afe, logxi, Ecut, Incl, error)
+    """
     
     # map gamma/Afe pairs to logxi, Ecut, Incl, error
     # also keep track of max/min error
@@ -153,20 +162,12 @@ def graph_errors(tuples, vert=True):
         plt.show()
         i = j
 
-def get_sorted_tuples(tuples, reverse=False):
-    '''
-    returns array of n (gamma, Afe, logxi, Ecut, Incl, error)
-    '''
-    tuples = tuples[tuples[:, -2].argsort()]
-    if reverse:
-        return tuples
-    else:
-        return tuples[::-1]
-
 def get_spectra():
-    '''
-    returns array of parameters and array of corresponding spectra
-    '''
+    """
+    Returns array of parameters and array of corresponding spectra
+
+    :return: the parameters (gamma, Afe, logxi, Ecut, Incl, error), and the corresponding X-ray spectra
+    """
     hdul = fits.open('xillver-a-Ec4-full.fits')
     spectra = []
     params = []
@@ -181,7 +182,9 @@ def get_spectra():
 
 def get_energy_bins():
     """
-    return the 4999 energy bins
+    Return the 4999 energy bins
+
+    :return: List of the 4999 energies
     """
     hdul = fits.open('xillver-a-Ec4-full.fits')
     bins = []

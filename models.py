@@ -19,8 +19,16 @@ from pathlib import Path
 
 # mean of absolute log counts
 SPECTRA_FACTOR = 2.720513452838532
+em = emullver.load_emulator()
 
 def get_model1(weights_file=None):
+    """
+    Return's pytorch model with 3 layer architecture
+    Can set weights if argument provided
+
+    :param str weights_file: Path to '.pth' weights file
+    :return: The pytorch model
+    """
     model = nn.Sequential(
             nn.Linear(5, 512),
             nn.ReLU(),
@@ -35,7 +43,42 @@ def get_model1(weights_file=None):
         model.load_state_dict(torch.load(weights_file))
     return model
 
+def get_model2(weights_file=None):
+    """
+    Return's pytorch model with 6 layer architectrure
+    Can set weights if argument provided
+
+    :param str weights_file: Path to '.pth' weights file
+    :return: The pytorch model
+    """
+    model = nn.Sequential(
+            nn.Linear(5, 512),
+            nn.ReLU(),
+            nn.Linear(512, 512),
+            nn.ReLU(),
+            nn.Linear(512, 512),
+            nn.ReLU(),
+            nn.Linear(512, 512),
+            nn.ReLU(),
+            nn.Linear(512, 512),
+            nn.ReLU(),
+            nn.Linear(512, 512),
+            nn.ReLU(),
+            nn.Linear(512, 512),
+            nn.ReLU(),
+            nn.Linear(512, 4999))
+    if weights_file:
+        model.load_state_dict(torch.load(weights_file))
+    return model
+
 def get_model3(weights_file=None):
+    """
+    Return's pytorch model with CNN architectrure
+    Can set weights if argument provided
+
+    :param str weights_file: Path to '.pth' weights file
+    :return: The pytorch model
+    """
     model = nn.Sequential(
             nn.Linear(5, 512),
             nn.ReLU(),
@@ -58,7 +101,6 @@ def get_model3(weights_file=None):
             nn.Upsample(scale_factor=2),
             nn.ReLU(),
             
-
             nn.Conv1d(in_channels=128, out_channels=128, kernel_size=3, padding=1),
             nn.Upsample(scale_factor=2),
             nn.ReLU(),
@@ -69,88 +111,16 @@ def get_model3(weights_file=None):
         model.load_state_dict(torch.load(weights_file))
     return model
 
-def get_model2(weights_file=None):
-    model = nn.Sequential(
-            nn.Linear(5, 512),
-            nn.ReLU(),
-            nn.Linear(512, 512),
-            nn.ReLU(),
-            nn.Linear(512, 512),
-            nn.ReLU(),
-            nn.Linear(512, 512),
-            nn.ReLU(),
-            nn.Linear(512, 512),
-            nn.ReLU(),
-            nn.Linear(512, 512),
-            nn.ReLU(),
-            nn.Linear(512, 512),
-            nn.ReLU(),
-            nn.Linear(512, 4999))
-    if weights_file:
-        model.load_state_dict(torch.load(weights_file))
-    return model
-
-def get_data():
-    '''
-    return training, validation, and testing data from files
-    '''
-    train_x = np.load('model_data/train_x.npy')
-    train_y = np.load('model_data/train_y.npy')
-    valid_x = np.load('model_data/valid_x.npy')
-    valid_y = np.load('model_data/valid_y.npy')
-    test_x = np.load('model_data/test_x.npy')
-    test_y = np.load('model_data/test_y.npy')
-
-    train_X = torch.tensor(train_x, dtype=torch.float32)
-    train_Y = torch.tensor(train_y, dtype=torch.float32)
-    valid_X = torch.tensor(valid_x, dtype=torch.float32)
-    valid_Y = torch.tensor(valid_y, dtype=torch.float32)
-    test_X = torch.tensor(test_x, dtype=torch.float32)
-    test_Y = torch.tensor(test_y, dtype=torch.float32)
-
-    return train_X, train_Y, valid_X, valid_Y, test_X, test_Y
-
-def model_get_errors(model, X, Y):
-    '''
-    return array of tuples of (gamma, Afe, logxi, Ecut, Incl, error)
-    '''
-    errors = []
-    count = 0
-    for X, Y in zip(test_X, test_Y):
-        pred = model(X)
-        error = torch.mean(torch.square(pred - Y))
-        errors.append((*X, error.item()))
-        count += 1
-        if count % 1000 == 0:
-            print(count)
-    errors = np.array(errors)
-    return errors
-
-def create_model_errors(model, model_name):
-    '''
-    creates file of array of (gamma, Afe, logxi, Ecut, Incl, error)
-    '''
-
-    train_X, train_Y, valid_X, valid_Y, test_X, test_Y = get_data()
-
-    train_Y = train_Y / SPECTRA_FACTOR
-    valid_Y = valid_Y / SPECTRA_FACTOR
-    test_Y = test_Y / SPECTRA_FACTOR
-
-    train_errors = model_get_errors(model, train_X, train_Y)
-    np.save('model_errors/' + model_name + '_train_errors.npy', train_errors)
-
-    valid_errors = model_get_errors(model, valid_X, valid_Y)
-    np.save('model_errors/' + model_name + '_valid_errors.npy', valid_errors)
-
-    test_errors = model_get_errors(model, test_X, test_Y)
-    np.save('model_errors/' + model_name + '_valid_errors.npy', test_errors)
-
-
 class EncoderDecoderModel(nn.Module):
     def __init__(self, weights_file=None):
+        """
+        Create an encoder-decoder model for x-ray spectra
+
+        :param str weights_file: Path to '.pth' weights file
+        :return: The pytorch model
+        """
+
         super(EncoderDecoderModel, self).__init__()
-        
         self.encoder = nn.Sequential(
             nn.Linear(4999, 2048),
             nn.ReLU(),
@@ -186,19 +156,98 @@ class EncoderDecoderModel(nn.Module):
         decoded = self.decoder(encoded)
         return decoded
 
+def emulator(x):
+    """
+    Given input x, return predicted x-ray spectrum produced by Matzeu et al emulator
+
+    :param (float,float,float,float,float) x: Parameter tuple of (gamma,Afe,logxi,Ecut,i)
+    :return: The predicted x-ray spectra
+    """
+    x = tf.reshape(
+            tf.convert_to_tensor(x),
+            [1, 5],
+        )
+    spectrum = em.predict(x, verbose=0)[0] / 2.3025851249694824 / 2.720513452838532
+    spectrum = torch.tensor(spectrum, dtype=torch.float32)
+    return spectrum
+
+def get_data():
+    """
+    Return training, validation, and testing data from files
+
+    :return: 
+    """
+    train_x = np.load('model_data/train_x.npy')
+    train_y = np.load('model_data/train_y.npy')
+    valid_x = np.load('model_data/valid_x.npy')
+    valid_y = np.load('model_data/valid_y.npy')
+    test_x = np.load('model_data/test_x.npy')
+    test_y = np.load('model_data/test_y.npy')
+
+    train_X = torch.tensor(train_x, dtype=torch.float32)
+    train_Y = torch.tensor(train_y, dtype=torch.float32)
+    valid_X = torch.tensor(valid_x, dtype=torch.float32)
+    valid_Y = torch.tensor(valid_y, dtype=torch.float32)
+    test_X = torch.tensor(test_x, dtype=torch.float32)
+    test_Y = torch.tensor(test_y, dtype=torch.float32)
+
+    return train_X, train_Y, valid_X, valid_Y, test_X, test_Y
+
+def model_get_errors(model, X, Y):
+    """
+    Return array of tuples of (gamma, Afe, logxi, Ecut, Incl, error)
+    """
+    errors = []
+    count = 0
+    for X, Y in zip(test_X, test_Y):
+        pred = model(X)
+        error = torch.mean(torch.square(pred - Y))
+        errors.append((*X, error.item()))
+        count += 1
+        if count % 1000 == 0:
+            print(count)
+    errors = np.array(errors)
+    return errors
+
+def create_model_errors(model, model_name):
+    """
+    Creates file of arrays of parameter tuples (gamma, Afe, logxi, Ecut, Incl, error)
+
+    :param model: The model
+    :param str model_name: Name for the model
+    """
+
+    train_X, train_Y, valid_X, valid_Y, test_X, test_Y = get_data()
+
+    train_Y = train_Y / SPECTRA_FACTOR
+    valid_Y = valid_Y / SPECTRA_FACTOR
+    test_Y = test_Y / SPECTRA_FACTOR
+
+    train_errors = model_get_errors(model, train_X, train_Y)
+    np.save('model_errors/' + model_name + '_train_errors.npy', train_errors)
+
+    valid_errors = model_get_errors(model, valid_X, valid_Y)
+    np.save('model_errors/' + model_name + '_valid_errors.npy', valid_errors)
+
+    test_errors = model_get_errors(model, test_X, test_Y)
+    np.save('model_errors/' + model_name + '_valid_errors.npy', test_errors)
 
 def train_model(model, total_steps, batch_size, lr, model_name, train_X, train_Y, valid_X, valid_Y):
-    '''
-    train model and collect weights and loss data
-    '''
+    """
+    Train model and collect weights and loss data
+
+    :param model: The model
+    :param int total_steps: Number of steps to train
+    :param int batch_size: Batch size for training
+    :param float lr: Learning rate
+    :param str model_name: Name for the model
+    :param train_X: List of parameter tuples for training
+    :param train_Y: List of the X-ray spectra for training
+    :param valid_X: List of parameter tuples for validation
+    :param valid_Y: List of the X-ray spectra for validation
+    """
     if Path('model_weights/' + model_name + '.pth').is_file():
         return
-
-    # train_X, train_Y, valid_X, valid_Y, test_X, test_Y = get_data()
-
-    # train_Y = train_Y / SPECTRA_FACTOR
-    # valid_Y = valid_Y / SPECTRA_FACTOR
-    # test_Y = test_Y / SPECTRA_FACTOR
 
     loss_fn = nn.MSELoss()
     optimizer = optim.Adam(model.parameters(), lr=lr)
@@ -242,7 +291,12 @@ def train_model(model, total_steps, batch_size, lr, model_name, train_X, train_Y
 
 def model_get_tuples(model, X, Y):
     """
-    return (gamma, Afe, logxi, Ecut, i, error, index) tuples for model
+    Return (gamma, Afe, logxi, Ecut, Incl, error, index) tuples for model
+
+    :param model: The model
+    :param X: the list of parameter tuples
+    :param Y: the list of X-ray spectra
+    :return: tuples of (gamma, Afe, logxi, Ecut, Incl, error, index)
     """
     tuples = []
     for i, (x, y) in enumerate(zip(X, Y)):
@@ -255,9 +309,28 @@ def model_get_tuples(model, X, Y):
     tuples = np.array(tuples)
     return tuples
 
-def model_plots(model_list, tuples, Y, num):
+def get_sorted_tuples(tuples, reverse=False):
     """
-    plot emulated spectra
+    Returns array of n (gamma, Afe, logxi, Ecut, Incl, error, index) to be sorted according to error
+
+    :param tuples: tuples of (gamma, Afe, logxi, Ecut, Incl, error, index)
+    :return: tuples sorted according to error
+    """
+    tuples = tuples[tuples[:, -2].argsort()]
+    if reverse:
+        return tuples
+    else:
+        return tuples[::-1]
+
+def model_plots(model_list, model_names, tuples, Y, num):
+    """
+    Plot emulated spectra
+
+    :param model_list: List of models to use
+    :param model_names: List of names for these models
+    :param tuples: Tuples of (gamma, Afe, logxi, Ecut, Incl, error, index)
+    :param Y: The X-ray spectra to be used
+    :param num: The first 'num' X-ray spectra will be plotteed
     """
     for i in range(num):
         # set up variables
@@ -280,7 +353,7 @@ def model_plots(model_list, tuples, Y, num):
                 pred = 2.720513452838532 * pred
                 res = y - pred
                 res_list.append(res)
-                ax.plot(bins, pred, label='model ' + str(j+1))
+                ax.plot(bins, pred, label=model_names[j], alpha=.5)
         
             # text
             ax.plot(bins, y, label='table')
@@ -306,7 +379,7 @@ def model_plots(model_list, tuples, Y, num):
             # plot residuals
             ax = fig.add_subplot(2, 1, 2)
             for j, res in enumerate(res_list):
-                ax.plot(bins, res, label='model ' + str(j+1), alpha=.5)
+                ax.plot(bins, res, label=model_names[j], alpha=.5)
             plt.axhline(y=0, color='r', linestyle='-')
             ax.set_xscale('log')
             ax.set_xlabel('Energy [keV]')
@@ -317,7 +390,11 @@ def model_plots(model_list, tuples, Y, num):
    
 def model_plot_loss(valid_loss_file, train_loss_file, name='Model'):
     """
-    plot model's validation and training loss
+    Plot model's validation and training loss
+
+    :param str valid_loss_file: Path to validation loss file
+    :param str train_loss_file: Path to training loss file
+    :param str name: Name of the model
     """
     valid_loss = np.load(valid_loss_file)
     train_loss = np.load(train_loss_file)

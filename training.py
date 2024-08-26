@@ -28,5 +28,4 @@ train_X, train_Y, valid_X, valid_Y, test_X, test_Y = get_data()
 train_Y = train_Y / SPECTRA_FACTOR
 valid_Y = valid_Y / SPECTRA_FACTOR
 
-model = EncoderDecoderModel()
-train_model(model, 800, 64, 0.001, 'encoderdecoder', train_Y, train_Y, valid_Y, valid_Y)
+train_model(get_model2(), 2000, 64, 0.001, 'model2', train_X, train_Y, valid_X, valid_Y)
