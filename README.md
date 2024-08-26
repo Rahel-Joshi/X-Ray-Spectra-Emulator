@@ -23,7 +23,7 @@ Features of X-Ray spectra correspond to certain characteristics of a black hole 
         </div>
 </div>
 
-Matzeu et al, X-Ray Accretion Disk-wind Emulator, 2022 (Figure 2) demonstrated that a neural network model can provide more accurate results than current techniques of linear interpolation. However, the Matzeu emulator (Figure 3) also appears to have some issues with false emission liens when retrained on the XILLVER table. We seek to develop an alternative emulator that does not have these issues with fake emission lines. Take a look at [Model_demo.ipynb](https://github.com/Rahel-Joshi/X-Ray-Spectra-Emulator/blob/main/Model_demo.ipynb) to see how our model performs against the Matzeu emulator (our model has much less noise and error!)
+Matzeu et al, X-Ray Accretion Disk-wind Emulator, 2022 (Figure 2) demonstrated that a neural network model can provide more accurate results than current techniques of linear interpolation. However, the Matzeu emulator also appears to have some issues with false emission lines (the red line dip in Figure 3) when retrained on the XILLVER table. We seek to develop an alternative emulator that does not have these issues with fake emission lines. Take a look at [Model_demo.ipynb](https://github.com/Rahel-Joshi/X-Ray-Spectra-Emulator/blob/main/Model_demo.ipynb) to see how our model performs against the Matzeu emulator (our model has much less noise and error!)
 
 
 
