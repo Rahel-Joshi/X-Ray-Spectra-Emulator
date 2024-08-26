@@ -7,7 +7,7 @@ X-ray observations of astronomical objects like black holes and neutron stars al
 
 ## Background
 
-![alt text]([http://url/to/img.png](https://github.com/Rahel-Joshi/X-Ray-Spectra-Emulator/blob/main/Example.png))
+https://github.com/Rahel-Joshi/X-Ray-Spectra-Emulator/blob/main/Example.png
 
 Features of X-Ray spectra correspond to certain characteristics of a black hole or neutron star system. For example, emission lines like the peak shown by the green line caused by reflections of the accretion disk can tell us a lot about the composition of said accretion disk! The spectra's features also correspond to other parameters such as the inclination of the system, or its ionization, etc. Currently, astrophysicts use models like XILLVER to fit observed X-Ray spectra from telescopes to then derive information regarding the physical parameters (composition, ionization, inclination, etc) of the black hole/neutron star system, through just telescope data! However, the tables use linear interpolation for the fitting, which can result in inaccuracy which we seek to solve through a machine learning approach instead.
 
