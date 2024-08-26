@@ -3,6 +3,8 @@
 
 Link for [SURF Presentation Slides](https://github.com/Rahel-Joshi/X-Ray-Spectra-Emulator/blob/main/SURF.pdf).
 
+## Abstract
+
 X-ray observations of astronomical objects like black holes and neutron stars allow us to constrain, with parameters, the most energetic processes in the universe. Currently, physics models, like XILLVER, can simulate X-ray emission from compact objects, allowing astrophysicists to create tables of template X-ray spectra resulting from different combinations of input physical parameters, used to fit observed spectra. Since a perfect fit is unlikely, the current standard is to linearly interpolate the closest spectra. However, due to the non-linear nature of X-ray spectra, linear interpolation can result in inaccurate results. Here, machine learning can be a powerful alternative approach due to its ability to capture non-linearity. Previous studies demonstrate the potential use of neural networks for this use case. In this project, we investigate how neural networks perform in emulating complex spectra with rich emission line signals, exploring different network architectures and data preprocessing techniques. We then compare the results of emulation with standard interpolation techniques evaluating the potential inaccuracies with the conventional approach.
 
 
