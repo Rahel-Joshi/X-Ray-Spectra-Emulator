@@ -2,6 +2,7 @@
 # Emulating X-Ray Spectroscopy Utilizing Machine Learning
 
 Link for [SURF Presentation Slides](https://github.com/Rahel-Joshi/X-Ray-Spectra-Emulator/blob/main/SURF.pdf).
+Link for [SURF Proposal](https://rahel-joshi.github.io/SURF_2024_Proposal.pdf).
 
 ## Abstract
 
